@@ -74,8 +74,8 @@ Android.prototype.fastReset = function(cb) {
   ], cb);
 };
 
-Android.prototype.keyevent = function(keycode, cb) {
-  this.proxy(["pressKeyCode", keycode], cb);
+Android.prototype.keyevent = function(keycode, metastate, cb) {
+  this.proxy(["pressKeyCode", {keycode: keycode, metastate: metastate}], cb);
 };
 
 Android.prototype.start = function(cb, onDie) {
@@ -747,9 +747,14 @@ Android.prototype.getScreenshot = function(cb) {
     }
   ],
   // Top level cb
-  function(){
+  function(err, res) {
+    var screenshotStatus = status.codes.Success.code;
+    try {
+      screenshotStatus = res[0].value === false ? status.codes.UnknownError.code : screenshotStatus;
+    } catch(e) {
+    }
     cb(null, {
-      status: status.codes.Success.code
+      status: screenshotStatus
       , value: b64data
     });
   });

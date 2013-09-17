@@ -4,6 +4,11 @@ import io.appium.android.bootstrap.AndroidCommand;
 import io.appium.android.bootstrap.AndroidCommandResult;
 import io.appium.android.bootstrap.CommandHandler;
 
+import java.util.Hashtable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.android.uiautomator.core.UiDevice;
 
 /**
@@ -11,6 +16,8 @@ import com.android.uiautomator.core.UiDevice;
  * 
  */
 public class PressKeyCode extends CommandHandler {
+  public Integer keyCode;
+  public Integer metaState;
 
   /*
    * @param command The {@link AndroidCommand} used for this handler.
@@ -23,10 +30,19 @@ public class PressKeyCode extends CommandHandler {
    * bootstrap.AndroidCommand)
    */
   @Override
-  public AndroidCommandResult execute(final AndroidCommand command) {
+  public AndroidCommandResult execute(final AndroidCommand command)
+      throws JSONException {
     try {
-      UiDevice.getInstance().pressKeyCode(
-          (Integer) command.params().get("keycode"));
+      final Hashtable<String, Object> params = command.params();
+      keyCode = (Integer) params.get("keycode");
+
+      if (params.get("metastate") != JSONObject.NULL) {
+        metaState = (Integer) params.get("metastate");
+        UiDevice.getInstance().pressKeyCode(keyCode, metaState);
+      } else {
+        UiDevice.getInstance().pressKeyCode(keyCode);
+      }
+
       return getSuccessResult(true);
     } catch (final Exception e) {
       return getErrorResult(e.getMessage());

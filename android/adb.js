@@ -1254,7 +1254,7 @@ ADB.prototype.getFocusedPackageAndActivity = function(cb) {
   logger.info("Getting focused package and activity");
   this.requireDeviceId();
   var cmd = this.adbCmd + " shell dumpsys window windows"
-    , searchRe = new RegExp(/mFocusedApp.+ ([a-zA-Z0-9\.]+)\/(\.?[^\}]+)\}/);
+    , searchRe = new RegExp(/mFocusedApp.+ ([a-zA-Z0-9\._]+)\/(\.?[^\}]+)\}/);
 
   exec(cmd, { maxBuffer: 524288 }, function(err, stdout) {
     if (err) {
@@ -1407,8 +1407,8 @@ ADB.prototype.uninstallApp = function(cb) {
   }.bind(this);
 
   if (this.skipUninstall) {
-    this.debug("Not uninstalling app since server started with --full-reset " +
-             "or --no-reset");
+    this.debug("Not uninstalling app since server not started with " +
+               "--full-reset");
     cb();
   } else {
     next();
